@@ -2,6 +2,26 @@ import streamlit as st
 import pandas as pd
 import anthropic
 import os
+import csv
+from datetime import datetime
+
+# Function to log successful configurations permanently
+def log_success(software, machine, issue, resolution):
+    log_file = "success_log.csv"
+    file_exists = os.path.isfile(log_file)
+    
+    with open(log_file, mode='a', newline='') as f:
+        writer = csv.writer(f)
+        if not file_exists:
+            writer.writerow(["Timestamp", "Software", "Machine", "Issue", "Resolution"])
+        
+        writer.writerow([
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            software,
+            machine,
+            issue,
+            resolution
+        ])
 
 # --- 1. SETUP CLAUDE ---
 try:
@@ -33,7 +53,17 @@ st.title("🦷 Jazz Sensor Image Quality Assistant")
 # --- SIDEBAR: SETUP ---
 st.sidebar.header("Initial Setup")
 machine = st.sidebar.selectbox("X-ray Source", ["Wall-mounted", "Hand-gun"])
-software = st.sidebar.selectbox("Imaging Software", ["Dexis 10", "Schick 5", "Apteryx", "VixWin"])
+# Updated list with FUSION and TWAIN categories sorted alphabetically
+software_options = sorted([
+    "CDR DICOM", "Carestream", "Dentrix Ascend", "DEXIS", "Eaglesoft", "Sidexis", "Vixwin", # FUSION
+    "XDR", "Edge Cloud", "Curve Hero", "Planmeca Romexis", "Oryx", "Tigerview", "Tracker", 
+    "iDental", "Clio", "DTX Studio", "SOTA", "EzDent-i", "Open Dental", "Tab32", "SOPRO", 
+    "Mipacs", "Denticon XV Capture", "Denticon XV Web", "CliniView", "Dentiray Capture", 
+    "Imaging XL", "Prof. Suni", "Xray Vision", "SIGMA", "PatientGallery", "Xelis Dental", 
+    "Overjet", "Aeka", "Other"
+])
+
+software = st.sidebar.selectbox("Imaging Software", software_options)
 
 # --- MAIN INTERFACE ---
 st.write(f"### Current Baseline for {software}")
@@ -76,12 +106,18 @@ if submit_button and user_feedback:
         try:
             response = client.messages.create(
                 model="claude-haiku-4-5-20251001",
-                max_tokens=500, # Increased so it doesn't cut off mid-sentence
+                max_tokens=500, 
                 messages=[{"role": "user", "content": prompt}]
             )
-            st.success(f"**Jazz Support AI:** \n\n {response.content[0].text}")
+            
+            # Store the response text so the log function can see it
+            ai_text = response.content[0].text
+            st.success(f"**Jazz Support AI:** \n\n {ai_text}")
+
+            # --- NEW LOGGING BUTTON ---
+            if st.button("🚀 This worked! Log success"):
+                log_success(software, machine, user_feedback, ai_text)
+                st.toast("Success logged to success_log.csv!")
+
         except Exception as e:
             st.error(f"Error: {e}")
-
-        if st.button("🚀 This worked! Log success"):
-            st.toast("Success logged! The system is learning.")
