@@ -52,7 +52,7 @@ st.write("### 💬 Refine Image Quality")
 # Use a form to prevent accidental re-runs
 with st.form("ai_form"):
     user_feedback = st.text_input("Describe the issue:")
-    submit_button = st.form_submit_button("Analyze Issue")
+    submit_button = st.form_submit_button("Analyze Image Issue")
 
 if submit_button and user_feedback:
     with st.spinner("Consulting Jazz Sensor Knowledge Base..."):
