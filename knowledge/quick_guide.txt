@@ -24,3 +24,10 @@
 - Rotation Not Working: If using FUSE bridge, rotation must be handled in the host imaging software, not the Jazz tool.
 - Normalization Ineffective: Check S-Curve Scale; if too high (e.g., 0.90), it is overriding the clipping of empty data.
 - Grainy Image: Increase exposure time based on tooth-type chart above.
+
+# INTEGRATION TROUBLESHOOTING
+- Issue: Trouble with Image rotation/flip in the final result of the image.
+- Logic: 
+    1. Check if software is in the FUSE list (e.g., DEXIS, Eaglesoft).
+    2. If FUSE: Explain that the host software emulates native sensor logic and overrides the Jazz settings. Direct tech to use the software's built-in rotation icons.
+    3. If TWAIN: Check rotation settings in Jazz configurator and Ensure "Save Settings" was clicked in the Jazz configurator.
