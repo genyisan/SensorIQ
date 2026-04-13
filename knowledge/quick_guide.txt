@@ -1,0 +1,26 @@
+# RECOMMENDED EXPOSURE TIMES (Seconds)
+
+## Wall-Mount X-Ray
+- Molars: 0.120 - 0.170
+- Pre-molars & Canines: 0.080 - 0.110
+- Incisors: 0.070 - 0.090
+
+## Handheld X-Ray
+- Molars: 0.27 - 0.50
+- Pre-molars & Canines: 0.20 - 0.30
+- Incisors: 0.17 - 0.23
+
+# HARDWARE FUNDAMENTALS
+- Low kVp (60-65): High contrast; best for Caries detection.
+- High kVp (70+): Long gray scale; best for Periodontal bone levels.
+- mA: Quantity of photons. High mA reduces "graininess" (noise).
+
+# DIAGNOSTIC RECIPES
+- Recipe A (Caries): 60-65 kVp | CLAHE 2.5 | Sharpen Weight 2.0 | Gamma 0.8.
+- Recipe B (Endo): Gamma 0.5 (lifts shadows) | Sharpen Sigma 5.0.
+- Recipe C (Perio): 70+ kVp | Disable S-Curve | Sharpen Weight 1.0.
+
+# TROUBLESHOOTING LOGIC
+- Rotation Not Working: If using FUSE bridge, rotation must be handled in the host imaging software, not the Jazz tool.
+- Normalization Ineffective: Check S-Curve Scale; if too high (e.g., 0.90), it is overriding the clipping of empty data.
+- Grainy Image: Increase exposure time based on tooth-type chart above.
