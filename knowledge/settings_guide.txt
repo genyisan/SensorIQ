@@ -14,8 +14,18 @@
     - High Value (0.90): Flatter curve. Grabs/compresses almost all empty data, rendering Adaptive Normalization clipping useless.
 
 # 2. IMAGE ROTATION & INTEGRATION BEHAVIOR
-- TWAIN Integration: Rotation/Flip settings in this tool WILL affect the final image in the imaging software.
-- FUSE Integration (Native): Host software will DISCARD these rotation settings and emulate native sensor rotation logic.
+- BEHAVIOR RULE: 
+    - TWAIN: Rotation/Flip settings in the Jazz tool WILL affect the final image.
+    - FUSE: Rotation/Flip settings in the Jazz tool are DISCARDED; must rotate in host software.
+
+- FUSE INTEGRATIONS (Native - Tool Settings Ignored):
+    CDR DICOM, Carestream, Dentrix Ascend, DEXIS, Eaglesoft, Sidexis, Vixwin.
+
+- TWAIN INTEGRATIONS (Tool Settings Accepted):
+    XDR, Edge Cloud, Curve Hero, Planmeca Romexis, Oryx, Tigerview, Tracker, iDental, 
+    Clio, DTX Studio, SOTA, EzDent-i, Open Dental, Tab32, SOPRO, Mipacs, 
+    Denticon XV Capture, Denticon XV Web, CliniView, Dentiray Capture, Imaging XL, 
+    Prof. Suni, Xray Vision, SIGMA, PatientGallery, Xelis Dental, MiPACS, Overjet, Aeka.
 
 # 3. CLAHE (LOCALIZED CONTRAST)
 - Clip Limit: Max contrast enhancement. Range [1.50 - 2.50]; Default: 2.00.
