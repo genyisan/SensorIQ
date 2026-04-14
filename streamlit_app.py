@@ -106,19 +106,33 @@ if st.button("Analyze Image Issue"):
             quick_guide = "knowledge/quick_guide.txt"       # Define path
             
             prompt = f"""
-            You are the 'Jazz Sensor Technical Lead'. 
-            Provide high-impact troubleshooting actions.
-            
-            Software: {software}
-            Machine: {machine}
-            Current Baseline: {current_settings}
-            Issue: {user_feedback}
+            <task>
+            Provide technical sensor calibration steps for: {software} | {machine}.
+            Baseline: {current_settings}
+            User Issue: {user_feedback}
+            </task>
+
+            <constraints>
+            - Format ONLY as: **Issue**, followed by a numbered list of **Actions**.
+            - NO intro, NO headers, NO "Root Cause", NO "Verification", NO titles.
+            - NO conversational filler.
+            - List exact numerical changes based on: {settings_guide} and {quick_guide}.
+            - Be extremely brief.
+            </constraints>
+
+            <example_format>
+            **Issue**: Image too dark.
+            1. Change Gamma from 0.65 to 0.90.
+            2. Change Brightness from -0.05 to +0.10.
+            3. Set S-Curve to 0.30.
+            </example_format>
             """
-            
+            # ------------------------------------------
+
             try:
                 response = client.messages.create(
                     model="claude-haiku-4-5-20251001",
-                    max_tokens=600,
+                    max_tokens=200, # Tightened limit to save tokens
                     messages=[{"role": "user", "content": prompt}]
                 )
                 st.session_state['current_ai_response'] = response.content[0].text
