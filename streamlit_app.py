@@ -24,14 +24,13 @@ def log_to_google_sheets(software, machine, issue, settings):
         "notes": f"Logged via Assistant: {datetime.now().strftime('%Y-%m-%d')}"
     }])
     
-    # Read existing data from Google Sheets
+    # Logic to fetch and append
     try:
         existing_data = conn.read()
-    except:
-        existing_data = pd.DataFrame(columns=["machine", "software", "issue", "settings", "notes"])
-        
-    updated_df = pd.concat([existing_data, new_entry], ignore_index=True)
-    conn.update(data=updated_df)
+        updated_df = pd.concat([existing_data, new_entry], ignore_index=True)
+        conn.update(data=updated_df)
+    except Exception as e:
+        st.error(f"Failed to log to Google Sheets: {e}")
 
 def clear_and_reset():
     """Clears inputs and session state to start fresh."""
