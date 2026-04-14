@@ -146,16 +146,23 @@ if 'current_ai_response' in st.session_state:
     
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("✅ This worked! Log success"):
-            log_to_google_sheets(
-                software, 
-                machine, 
-                st.session_state['last_issue'], 
-                st.session_state['current_ai_response']
-            )
-            clear_and_reset()
-            st.rerun() 
+        if st.button("✅ This worked! Log success", key="log_btn"):
+            try:
+                issue_to_log = st.session_state.get('last_issue', "Unknown Issue")
+                resolution_to_log = st.session_state.get('current_ai_response', "")
+                
+                log_to_google_sheets(software, machine, issue_to_log, resolution_to_log)
+                
+                st.toast("Successfully saved!")
+                clear_and_reset()
+                st.rerun()
+                
+            except Exception as e:
+                st.error(f"❌ LOGGING FAILED: {e}")
+                st.info("Check if your Google Sheet is set to 'Anyone with link can Edit'")
+                st.stop() # Stops the script here so the error remains visible
+                
     with col2:
-        if st.button("🔄 Clear & Start Over"):
+        if st.button("🔄 Clear & Start Over", key="clear_btn"):
             clear_and_reset()
             st.rerun()
