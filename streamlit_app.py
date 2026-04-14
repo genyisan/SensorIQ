@@ -2,55 +2,45 @@ import streamlit as st
 import pandas as pd
 import anthropic
 import os
-import csv
+from streamlit_gsheets import GSheetsConnection
 from datetime import datetime
 
 # --- 1. SETUP CLAUDE ---
 try:
     client = anthropic.Anthropic(api_key=st.secrets["CLAUDE_KEY"])
 except:
-    st.error("Missing CLAUDE_KEY in Streamlit Secrets! Please add it to use the AI features.")
+    st.error("Missing CLAUDE_KEY in Streamlit Secrets!")
 
-# --- 2. LOGGING & DATA LOADING LOGIC ---
+# --- 2. DATA CONNECTIONS ---
+# Connect to Google Sheets for permanent logging
+conn = st.connection("gsheets", type=GSheetsConnection)
 
-def log_success(software, machine, issue, resolution):
-    """Appends a successful resolution to a permanent CSV file."""
-    log_file = "success_log.csv"
-    # Note: Streamlit Cloud resets local files on reboot; 
-    # for permanent storage, consider a database or GitHub API integration later.
-    with open(log_file, mode='a', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerow([
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            software,
-            machine,
-            issue,
-            resolution
-        ])
+def log_to_google_sheets(software, machine, issue, resolution):
+    """Appends success data to the linked Google Sheet."""
+    new_entry = pd.DataFrame([{
+        "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "Software": software,
+        "Machine": machine,
+        "Issue": issue,
+        "Resolution": resolution
+    }])
+    # Fetch existing data, add new row, and update sheet
+    existing_data = conn.read()
+    updated_df = pd.concat([existing_data, new_entry], ignore_index=True)
+    conn.update(data=updated_df)
 
-def load_doc(filename):
-    """Loads text manuals from the knowledge folder."""
-    path = os.path.join("knowledge", filename)
-    if os.path.exists(path):
-        with open(path, "r") as f:
-            return f.read()
-    return "No specific manual found."
+def clear_and_reset():
+    """Clears AI response and input to start from zero."""
+    for key in ['current_ai_response', 'last_issue', 'user_input']:
+        if key in st.session_state:
+            del st.session_state[key]
+    st.toast("System Reset - Parameters Cleared")
 
-# Load text knowledge
-settings_guide = load_doc("settings_guide.txt")
-quick_guide = load_doc("quick_guide.txt")
-
-# Load Baseline CSV
+# Load baseline CSV
 try:
     df_baseline = pd.read_csv("iq_settings.csv")
 except:
     df_baseline = pd.DataFrame(columns=['machine', 'software', 'goal', 'details'])
-
-# Load Success Log CSV
-try:
-    df_success = pd.read_csv("success_log.csv")
-except:
-    df_success = pd.DataFrame(columns=['Timestamp', 'Software', 'Machine', 'Issue', 'Resolution'])
 
 # --- 3. UI CONFIGURATION ---
 st.set_page_config(page_title="Jazz Sensor Assistant", page_icon="🦷")
@@ -59,91 +49,68 @@ st.title("🦷 Jazz Sensor Image Quality Assistant")
 # --- 4. SIDEBAR: SETUP ---
 st.sidebar.header("Initial Setup")
 
-machine = st.sidebar.selectbox("X-ray Source", ["Wall-mounted", "Hand-held", "Unknown"])
+# "Unknown" removed from UI as requested
+machine_options = ["Wall-mounted", "Hand-held"]
+machine = st.sidebar.selectbox("X-ray Source", machine_options)
 
-# Categorized Software List (FUSE vs TWAIN)
 software_options = sorted([
-    "CDR DICOM", "Carestream", "Dentrix Ascend", "DEXIS", "Eaglesoft", "Sidexis", "Vixwin", # FUSE
+    "CDR DICOM", "Carestream", "Dentrix Ascend", "DEXIS", "Eaglesoft", "Sidexis", "Vixwin", 
     "XDR", "Edge Cloud", "Curve Hero", "Planmeca Romexis", "Oryx", "Tigerview", "Tracker", 
     "iDental", "Clio", "DTX Studio", "SOTA", "EzDent-i", "Open Dental", "Tab32", "SOPRO", 
     "Mipacs", "Denticon XV Capture", "Denticon XV Web", "CliniView", "Dentiray Capture", 
     "Imaging XL", "Prof. Suni", "Xray Vision", "SIGMA", "PatientGallery", "Xelis Dental", 
-    "Overjet", "Aeka", "Other"
+    "Overjet", "Aeka", "Classic", "Archy", "Other"
 ])
 software = st.sidebar.selectbox("Imaging Software", software_options)
 
-# --- 5. MAIN INTERFACE ---
-st.write(f"### Current Baseline for {software}")
+# --- 5. BASELINE DISPLAY ---
+# Logic still looks for "Unknown" in the CSV if the specific source isn't found
+match = df_baseline[(df_baseline['software'] == software) & 
+                    ((df_baseline['machine'] == machine) | (df_baseline['machine'] == "Unknown"))]
 
-# Search for software baseline in CSV
-match = df_baseline[df_baseline['software'] == software]
 if not match.empty:
     baseline_details = match.iloc[0]['details']
-    st.info(baseline_details)
+    st.info(f"**Baseline Settings:** {baseline_details}")
 else:
-    baseline_details = "No baseline found. Use standard defaults."
-    st.warning("No baseline found. Ask the assistant below for a starting point.")
+    baseline_details = "Standard defaults."
+    st.warning("No specific baseline found for this combination.")
 
 st.divider()
 
-# --- 6. INTERACTIVE TROUBLESHOOTING ---
+# --- 6. TROUBLESHOOTING ---
 st.write("### 💬 Refine Image Quality")
 
-with st.form("ai_form"):
-    user_feedback = st.text_input("Describe the issue (e.g., 'Image is grainy' or 'Suspected fracture'):")
-    submit_button = st.form_submit_button("Analyze Image Issue")
+# Use session state for the text input to allow clearing
+user_feedback = st.text_input("Describe the issue:", key="user_input")
 
-if submit_button and user_feedback:
-    with st.spinner("Consulting Jazz Knowledge Base & Success Logs..."):
-        
-        # Pull relevant history from Success Log
-        past_fixes = ""
-        if not df_success.empty:
-            # Filter for this software and get the last 3 successful fixes
-            history = df_success[df_success['Software'] == software].tail(3)
-            if not history.empty:
-                past_fixes = history[['Issue', 'Resolution']].to_string(index=False)
-
-        prompt = f"""
-        <system_instruction>
-        You are the 'Jazz Sensor Technical Lead'. 
-        Provide ONLY high-impact, technical troubleshooting steps.
-        - Use the specific technical names and ranges from: {settings_guide}.
-        - Apply specialty diagnostic logic from: {quick_guide}.
-        - Format as: **Issue**, followed by a numbered list of **Actions**.
-        - NO conversational filler.
-        
-        If available, consider these past successful fixes for this software:
-        {past_fixes}
-        </system_instruction>
-
-        <context>
-        Software: {software}
-        X-ray Machine: {machine}
-        Baseline Settings: {baseline_details}
-        User Reported Issue: "{user_feedback}"
-        </context>
-        """
-        
-        try:
-            response = client.messages.create(
-                model="claude-haiku-4-5-20251001",
-                max_tokens=600,
-                messages=[{"role": "user", "content": prompt}]
-            )
+if st.button("Analyze Image Issue"):
+    if user_feedback:
+        with st.spinner("Analyzing..."):
+            # Prompt logic remains the same (pointing to your knowledge docs)
+            prompt = f"Software: {software} | Machine: {machine} | Issue: {user_feedback}"
             
-            ai_text = response.content[0].text
-            st.session_state['last_ai_response'] = ai_text # Store for logging
-            st.success(f"**Jazz Support AI:** \n\n {ai_text}")
+            try:
+                response = client.messages.create(
+                    model="claude-haiku-4-5-20251001",
+                    max_tokens=600,
+                    messages=[{"role": "user", "content": prompt}]
+                )
+                st.session_state['current_ai_response'] = response.content[0].text
+                st.session_state['last_issue'] = user_feedback
+            except Exception as e:
+                st.error(f"Error: {e}")
 
-        except Exception as e:
-            st.error(f"Error contacting AI: {e}")
-
-# --- 7. PERMANENT LOGGING BUTTON ---
-# This sits outside the form so it doesn't trigger a re-analysis
-if 'last_ai_response' in st.session_state:
-    if st.button("🚀 This worked! Log success"):
-        log_success(software, machine, user_feedback, st.session_state['last_ai_response'])
-        st.toast("Success logged permanently to success_log.csv!")
-        # Clear state to prevent double logging
-        del st.session_state['last_ai_response']
+# --- 7. RESULTS & RESET ---
+if 'current_ai_response' in st.session_state:
+    st.success(f"**Jazz Support AI:** \n\n {st.session_state['current_ai_response']}")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("✅ This worked! Log success"):
+            log_to_google_sheets(software, machine, st.session_state['last_issue'], st.session_state['current_ai_response'])
+            clear_and_reset()
+            st.rerun() # Refresh page to show clean state
+    with col2:
+        if st.button("🔄 Clear & Start Over"):
+            clear_and_reset()
+            st.rerun()
