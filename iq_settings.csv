@@ -1,2 +1,2 @@
-machine,software,goal,details
+machine,software,issue,settings,notes
 Wall-mounted,DEXIS,Baseline,"Adaptive Normalization: Enable (S-Curve 0.10, Low% 0, High% 100). CLAHE: Enable (Clip 2.00, Regions 4x4). Sharpen: Enable (Sigma 2.0, Weight 0.65). Gamma: Enable (Level 0.65). Manual: Contrast 0.05, Brightness -0.05. Rotation: 270 CW."
