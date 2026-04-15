@@ -15,6 +15,43 @@ Unknown,Denticon XV Capture,Baseline,"Adaptive Normalization: Applied (Discard l
 Unknown,Denticon XV Capture,Baseline,"Adaptive Normalization: Applied (Discard low 1% high 1%), Noise Removal: Despeckle (Mask 3×3), Gamma: 0.50 (Applied), Sharpen: Gaussian Edge (Mask 15×15 Level 150)",none
 Unknown,Denticon XV Capture,Baseline,"Adaptive Normalization: Discard low 1% high 1% (Applied), Noise Removal: Despeckle (Mask 3×3), Sharpen: Mask 15×15 Level 15 (Applied), Gamma: 0.50 (Applied)",none
 Unknown,Denticon XV Web,Baseline,"Gamma: PreGamma 0.70 + PostGamma 0.80 (IOFilter2), Noise Removal: NoiseAdjustment 9 (Applied), Sharpen: DefinitionEnhancement 20 + PostSharpening 1 (Factor 20), Adaptive Normalization: BlackCompression 3 WhiteCompression 1 HistogramFactor 1.75 (Applied)",none
+Wall-mounted,Curve Hero,Baseline,"Adaptive Normalization: Enable (S-Curve 0.50, Low% 1, High% 99). CLAHE: Enable (Clip 2.00, Regions 4x4). Sharpen: Enable (Sigma 7.5, Weight 1.50). Gamma: Enable (Level 0.65). Manual: Contrast 0.00, Brightness 0.00. Rotation: 270 CW.",none
+Unknown,Curve Hero,Baseline,"Noise Removal: Enabled, Adaptive Normalization: Enabled (S-Curve Scale 0.10, Low Percentile 2, High Percentile 98), CLAHE: Enabled (Clip Limit 2.00, Num Regions X 2 Y 2), Sharpen: Enabled (Sigma 8.0, Weight 1.65), Gamma: Enabled (Level 0.65), Manual: Contrast 0.05 Brightness -0.05, Rotation: 180 CW",none
+Unknown,Curve Hero,Baseline,"Noise Removal: Enabled, Adaptive Normalization: Enabled (S-Curve Scale 0.50, Low Percentile 1, High Percentile 99), CLAHE: Enabled (Clip Limit 2.00, Num Regions X 4 Y 4), Sharpen: Enabled (Sigma 7.0, Weight 1.65), Gamma: Enabled (Level 0.65), Manual: Contrast 0.10 Brightness -0.10",none
+Unknown,Curve Hero,Sharp,"Adaptive Normalization: Enabled (S-Curve Scale 0.10, Low Percentile 0, High Percentile 100), CLAHE: Enabled (Clip Limit 2.00, Num Regions X 4 Y 4), Sharpen: Enabled (Sigma 7.4, Weight 1.35), Gamma: Enabled (Level 0.65), Manual: Contrast 0.05 Brightness -0.05",none
+Unknown,Curve Hero,Baseline,"Adaptive Normalization: Enabled (S-Curve Scale 0.20, Low Percentile 1, High Percentile 99), CLAHE: Enabled (Clip Limit 2.00, Num Regions X 4 Y 4), Sharpen: Enabled (Sigma 9.0, Weight 1.65), Gamma: Enabled (Level 0.65), Manual: Contrast 0.10 Brightness -0.10",none
+Unknown,Curve Hero,Baseline,"Adaptive Normalization: Enabled (S-Curve Scale 0.10, Low Percentile 0, High Percentile 100), CLAHE: Enabled (Clip Limit 2.00, Num Regions X 4 Y 4), Sharpen: Enabled (Sigma 8.0, Weight 1.75), Gamma: Enabled (Level 0.65), Manual: Contrast 0.05 Brightness -0.05",none
+Unknown,Curve Hero,Baseline,"Adaptive Normalization: Enabled (S-Curve Scale 0.10, Low Percentile 2, High Percentile 98), CLAHE: Enabled (Clip Limit 2.00, Num Regions X 4 Y 4), Sharpen: Enabled (Sigma 8.0, Weight 1.65), Gamma: Enabled (Level 0.65), Manual: Contrast 0.05 Brightness -0.05",none
+Unknown,Dentrix Ascend,Baseline,"Adaptive Normalization: Enabled (S-Curve Scale 0.10, Low Percentile 0, High Percentile 100), CLAHE: Enabled (Clip Limit 2.00, Num Regions X 2 Y 2), Sharpen: Enabled (Sigma 7.4, Weight 1.35), Gamma: Enabled (Level 0.80), Manual: Contrast 0.10 Brightness -0.10",none
+Unknown,Dentrix Ascend,Baseline,"Noise Removal: Enabled (Pre-Filter Level Min, Post-Filter Level Min), Adaptive Normalization: Enabled (S-Curve Scale 0.20, Low Percentile 1, High Percentile 99), CLAHE: Enabled (Clip Limit 2.00, Num Regions X 4 Y 4), Sharpen: Enabled (Sigma 2.0, Weight 0.65), Gamma: Enabled (Level 0.55), Manual: Contrast 0.05 Brightness -0.05",none
+Unknown,DEXIS,Baseline,"Noise Removal: Enabled (Filter Level Min), Adaptive Normalization: Enabled (S-Curve Scale 0.20, Low Percentile 100, High Percentile 100), CLAHE: Enabled (Clip Limit 3.50, Num Regions X 6 Y 6), Sharpen: Enabled (Sigma 8.0, Weight 0.65), Gamma: Enabled (Level 0.65), Manual: Contrast 0.05 Brightness -0.05, Rotation: 270 CW",none
+Unknown,DEXIS,Baseline,"Noise Removal: Enabled (Pre-Filter Level Min), Adaptive Normalization: Enabled (S-Curve Scale 0.10, Low Percentile 0, High Percentile 100), CLAHE: Enabled (Clip Limit 2.00, Num Regions X 4 Y 4), Sharpen: Enabled (Sigma 2.0, Weight 0.65), Gamma: Enabled (Level 0.65), Manual: Enabled (Contrast 0.05, Brightness -0.05), Rotation: 270 CW",none
+Unknown,DEXIS,Baseline,"Noise Removal: Enabled (Pre-Filter Level Min, Post-Filter Level Min), Adaptive Normalization: Enabled (S-Curve Scale 0.20, Low Percentile 1, High Percentile 99), CLAHE: Enabled (Clip Limit 2.00, Num Regions X 4 Y 4), Sharpen: Disabled, Gamma: Enabled (Level 0.65), Manual: Enabled (Contrast 0.10, Brightness -0.08), Rotation: 270 CW",none
+Unknown,DEXIS,Baseline,"Noise Removal: Enabled (Filter Level Min), Adaptive Normalization: Enabled (S-Curve Scale 0.10, Low Percentile 0, High Percentile 100), CLAHE: Enabled (Clip Limit 2.00, Num Regions X 4 Y 4), Sharpen: Enabled (Sigma 2.0, Weight 0.65), Gamma: Enabled (Level 0.65), Manual: Enabled (Contrast 0.05, Brightness -0.05), Rotation: 270 CW",none
+Unknown,DEXIS,Baseline,"Noise Removal: Enabled (Pre-Filter Level Min), Adaptive Normalization: Enabled (S-Curve Scale 0.20, Low Percentile 1, High Percentile 99), CLAHE: Enabled (Clip Limit 2.00, Num Regions X 4 Y 4), Sharpen: Disabled, Gamma: Enabled (Level 0.65), Manual: Enabled (Contrast 0.10 Brightness -0.08), Rotation: 270 CW",none
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
