@@ -10,11 +10,11 @@ Unknown,Harmony,Endo,"Sharpen: Mask 21×21 (Factor 20), Brightness/Contrast: Bri
 Unknown,Harmony,Perio,"Noise Removal: Fast Median (Applied), Brightness/Contrast: Brightness +10 Contrast −10 (Applied)",none
 Unknown,Unknown,Restorative,"Sharpen: Mask 35×35 Level 15 (Applied), Gamma: 0.65 (R/G/B all 0.65)",none
 Unknown,Imaging XL,Baseline,"Adaptive Normalization: Applied (Discard low 1% high 1%), Noise Removal: Despeckle (Mask 3×3), Gamma: 0.85 (Applied), Brightness/Contrast: Brightness −10 Contrast +10 (Applied), Sharpen: Mask 31×31 Level 15 (Applied)",none
-Unknown,Denticon XV Web,Baseline,"Noise Removal: Despeckle (Mask 3×3), Adaptive Normalization: Normalize + Discard low 1% high 1% (Applied), Gamma: 0.55 (Applied), Brightness/Contrast: Contrast Level 100 (Applied), Sharpen: Gaussian Edge (Mask 15×15 Level 100) + Unsharp (Mask 15×15 Level 15)",none
-Unknown,Denticon XV Web,Baseline,"Adaptive Normalization: Applied (Discard low 1% high 1%), Noise Removal: Despeckle (Mask 3×3), Gamma: 0.55 (Applied), Brightness/Contrast: Brightness −10 Contrast +10 (Applied), Sharpen: Mask 35×35 Level 30 (Applied)",none
-Unknown,Denticon XV Web,Baseline,"Adaptive Normalization: Applied (Discard low 1% high 1%), Noise Removal: Despeckle (Mask 3×3), Gamma: 0.50 (Applied), Sharpen: Gaussian Edge (Mask 15×15 Level 150)",none
-Unknown,Denticon XV Web,Baseline,"Adaptive Normalization: Discard low 1% high 1% (Applied), Noise Removal: Despeckle (Mask 3×3), Sharpen: Mask 15×15 Level 15 (Applied), Gamma: 0.50 (Applied)",none
-
+Unknown,Denticon XV Capture,Baseline,"Noise Removal: Despeckle (Mask 3×3), Adaptive Normalization: Normalize + Discard low 1% high 1% (Applied), Gamma: 0.55 (Applied), Brightness/Contrast: Contrast Level 100 (Applied), Sharpen: Gaussian Edge (Mask 15×15 Level 100) + Unsharp (Mask 15×15 Level 15)",none
+Unknown,Denticon XV Capture,Baseline,"Adaptive Normalization: Applied (Discard low 1% high 1%), Noise Removal: Despeckle (Mask 3×3), Gamma: 0.55 (Applied), Brightness/Contrast: Brightness −10 Contrast +10 (Applied), Sharpen: Mask 35×35 Level 30 (Applied)",none
+Unknown,Denticon XV Capture,Baseline,"Adaptive Normalization: Applied (Discard low 1% high 1%), Noise Removal: Despeckle (Mask 3×3), Gamma: 0.50 (Applied), Sharpen: Gaussian Edge (Mask 15×15 Level 150)",none
+Unknown,Denticon XV Capture,Baseline,"Adaptive Normalization: Discard low 1% high 1% (Applied), Noise Removal: Despeckle (Mask 3×3), Sharpen: Mask 15×15 Level 15 (Applied), Gamma: 0.50 (Applied)",none
+Unknown,Denticon XV Web,Baseline,"Gamma: PreGamma 0.70 + PostGamma 0.80 (IOFilter2), Noise Removal: NoiseAdjustment 9 (Applied), Sharpen: DefinitionEnhancement 20 + PostSharpening 1 (Factor 20), Adaptive Normalization: BlackCompression 3 WhiteCompression 1 HistogramFactor 1.75 (Applied)",none
 
 
 
