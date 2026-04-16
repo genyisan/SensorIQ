@@ -78,7 +78,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.title("🦷 Jazz Sensor Image Quality Assistant")
+st.title("🦷 Jazz AI Image Quality Assistant")
 
 # --- 5. SIDEBAR: SETUP ---
 st.sidebar.header("Initial Setup")
