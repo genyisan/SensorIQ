@@ -104,7 +104,7 @@ st.divider()
 st.write("### 💬 Refine Image Quality")
 
 # Key='user_input' allows us to manipulate it later
-user_feedback = st.text_area(""How do you want to refine the image?", height=130, placeholder="e.g., The image is still too grainy in the posterior...")
+user_feedback = st.text_area("How do you want to refine the image?", height=130, placeholder="e.g., The image is still too grainy in the posterior...")
 
 if st.button("Analyze Image Issue"):
     if user_feedback:
