@@ -60,10 +60,18 @@ st.set_page_config(page_title="Jazz Sensor Assistant", page_icon="🦷")
 st.markdown(
     """
     <style>
-    div[data-testid="stTextInput"] input {
+    /* This targets the new expanded text area box */
+    div[data-testid="stTextArea"] textarea {
         background-color: #e7e5f5 !important; /* Very light purple */
         border: 2px solid #ce93d8 !important; /* Defined border */
         color: #4a148c !important; /* Deep purple text */
+    }
+    
+    /* Optional: Keeps styling for standard inputs if you use them elsewhere */
+    div[data-testid="stTextInput"] input {
+        background-color: #e7e5f5 !important;
+        border: 2px solid #ce93d8 !important;
+        color: #4a148c !important;
     }
     </style>
     """,
