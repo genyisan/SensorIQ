@@ -73,6 +73,16 @@ st.markdown(
         border: 2px solid #ce93d8 !important;
         color: #4a148c !important;
     }
+    
+    /* This gives steps 6-9 (the blockquotes) a distinct look */
+blockquote {
+    border-left: 5px solid #ce93d8 !important; /* Purple accent bar */
+    background-color: #f8f9fa !important; /* Light grey background for contrast */
+    padding: 10px 15px !important;
+    color: #4a148c !important; /* Deep purple text */
+    margin: 10px 0 !important;
+    border-radius: 4px;
+}
     </style>
     """,
     unsafe_allow_html=True
@@ -141,6 +151,11 @@ if st.button("Analyze Image Issue"):
             # 1. APTERYX SPECIFIC LOGIC
             {"- APTERYX DEVICE DETECTED: Note that values are REVERSED (higher % = more data cut off)." if is_apteryx else ""}
             {"- APTERYX LIMITS: Adaptive Normalization (0-100%), Despeckle (3x3-15x15), Laplace (3x3-15x15, Level 0-100), Gamma (0-100)." if is_apteryx else ""}
+
+            # 2. THE "CONTRAST" RULES (COLOR/STYLING)
+            - Steps 1 through 5 should be the numerical software changes.
+            - **IMPORTANT**: Any steps regarding "Zooming out", "Handheld distance", "Exposure times", or "Physical Baselines" MUST be prefixed with the `>` character. 
+            - Example: "> 6. Recommended Exposure: Anterior (0.08s) | Posterior (0.12s)."
 
             # 2. HISTOGRAM & EXPOSURE RULES
             - IF Adaptive Normalization is adjusted: The AI must specify the level of peaks or dips to remove based on the recommended %. 
