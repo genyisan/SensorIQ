@@ -13,41 +13,54 @@ except:
     st.error("Missing CLAUDE_KEY in Streamlit Secrets!")
 
 # --- 2. DATA CONNECTIONS ---
-import gspread
-from google.oauth2.service_account import Credentials
-
 def log_to_google_sheets(software, machine, issue, settings):
-    """Appends success data using gspread for direct write access"""
     try:
-        # 1. Setup credentials using the secrets we formatted earlier
-        scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-        creds = Credentials.from_service_account_info(
-            st.secrets["gcp_service_account"], 
-            scopes=scope
-        )
+        # 1. Scope must include Drive for 'writing' permissions
+        scope = [
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+        
+        # 2. Get secrets
+        s = st.secrets["gcp_service_account"]
+        
+        # 3. Explicitly reconstruct the credentials object
+        # This bypasses some potential TOML parsing issues
+        credentials_info = {
+            "type": s["type"],
+            "project_id": s["project_id"],
+            "private_key_id": s["private_key_id"],
+            "private_key": s["private_key"],
+            "client_email": s["client_email"],
+            "client_id": s["client_id"],
+            "auth_uri": s["auth_uri"],
+            "token_uri": s["token_uri"],
+            "auth_provider_x509_cert_url": s["auth_provider_x509_cert_url"],
+            "client_x509_cert_url": s["client_x509_cert_url"]
+        }
+        
+        creds = Credentials.from_service_account_info(credentials_info, scopes=scope)
         client = gspread.authorize(creds)
 
-        # 2. Open the sheet using the ID (found in your URL)
-        # Get the URL from your secrets or paste the ID string here directly
+        # 4. Open and Append
+        # If this fails, make sure the email below is an EDITOR on your sheet:
+        # sheets-logger@sensoriq-logging.iam.gserviceaccount.com
         sheet_url = st.secrets["connections"]["gsheets"]["spreadsheet"]
         sheet = client.open_by_url(sheet_url).sheet1
 
-        # 3. Prepare the row
         new_row = [
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             machine,
             software,
             issue,
-            str(settings),
-            f"Logged via Assistant: {datetime.now().strftime('%Y-%m-%d')}"
+            str(settings)
         ]
 
-        # 4. Append the row (No need to read existing data or concat!)
         sheet.append_row(new_row)
         return True
 
     except Exception as e:
-        # This will give you the exact error if it fails
-        raise Exception(f"Logging Error: {e}")
+        raise Exception(f"Connection Error: {e}")
 
 # --- 3. LOAD BASELINE DATA ---
 try:
