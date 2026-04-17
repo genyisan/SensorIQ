@@ -1,5 +1,3 @@
 pandas
 anthropic
-gspread
-google-auth
-google-auth-oauthlib
+st-gsheets-connection
