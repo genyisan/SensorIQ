@@ -1,66 +1,49 @@
 import streamlit as st
-import gspread
-from google.oauth2.service_account import Credentials
 import pandas as pd
-from datetime import datetime
 import anthropic
-import os
+from datetime import datetime
+from streamlit_gsheets import GSheetsConnection
 
 # --- 1. SETUP CLAUDE ---
 try:
+    # This pulls from the stand-alone CLAUDE_KEY in secrets
     client = anthropic.Anthropic(api_key=st.secrets["CLAUDE_KEY"])
-except:
+except Exception:
     st.error("Missing CLAUDE_KEY in Streamlit Secrets!")
+    st.stop() # Stop the app if Claude isn't ready
 
 # --- 2. DATA CONNECTIONS ---
+# This pulls from the [connections.gsheets] block in secrets
+conn = st.connection("gsheets", type=GSheetsConnection)
+
 def log_to_google_sheets(software, machine, issue, settings):
+    """Appends success data using the validated GSheetsConnection"""
     try:
-        # 1. Scope must include Drive for 'writing' permissions
-        scope = [
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
+        # 2. Read existing data (this ensures we have the column headers)
+        existing_data = conn.read()
         
-        # 2. Get secrets
-        s = st.secrets["gcp_service_account"]
+        # 3. Create the new row as a DataFrame
+        new_entry = pd.DataFrame([{
+            "machine": machine,
+            "software": software,
+            "issue": issue,
+            "settings": str(settings),
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }])
         
-        # 3. Explicitly reconstruct the credentials object
-        credentials_info = {
-            "type": s["type"],
-            "project_id": s["project_id"],
-            "private_key_id": s["private_key_id"],
-            "private_key": s["private_key"].replace("\\n", "\n"), # Fixes potential slash issues
-            "client_email": s["client_email"],
-            "client_id": s["client_id"],
-            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-            "token_uri": "https://oauth2.google.com/token",
-            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-            "client_x509_cert_url": s["client_x509_cert_url"]
-        }
+        # 4. Merge and Update
+        updated_df = pd.concat([existing_data, new_entry], ignore_index=True)
+        conn.update(data=updated_df)
         
-        creds = Credentials.from_service_account_info(credentials_info, scopes=scope)
-        client = gspread.authorize(creds)
-
-        # 4. Open and Append
-        # If this fails, make sure the email below is an EDITOR on your sheet:
-        # sheets-logger@sensoriq-logging.iam.gserviceaccount.com
-        sheet_url = st.secrets["connections"]["gsheets"]["spreadsheet"]
-        sheet = client.open_by_url(sheet_url).sheet1
-
-        new_row = [
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            machine,
-            software,
-            issue,
-            str(settings)
-        ]
-
-        sheet.append_row(new_row)
+        # 5. Clear cache so the next person gets fresh data
+        st.cache_data.clear()
         return True
-
+        
     except Exception as e:
-        raise Exception(f"Connection Error: {e}")
-
+        # This will tell us if it's still a DNS issue or a permission issue
+        st.error(f"LOGGING ERROR: {e}")
+        return False
+        
 # --- 3. LOAD BASELINE DATA ---
 try:
     df_baseline = pd.read_csv("iq_settings.csv")
