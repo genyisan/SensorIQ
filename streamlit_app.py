@@ -54,7 +54,7 @@ except:
     df_baseline = pd.DataFrame(columns=['machine', 'software', 'issue', 'settings', 'notes'])
 
 # --- 4. UI CONFIGURATION ---
-st.set_page_config(page_title="Jazz Sensor Assistant", page_icon="🦷")
+st.set_page_config(page_title="Jazz AI Image quality", page_icon="🦷")
 
 # --- CUSTOM STYLING ---
 st.markdown(
@@ -158,8 +158,9 @@ if st.button("Analyze Image Issue"):
             - Example: "> 6. Recommended Exposure: Anterior (0.08s) | Posterior (0.12s)."
 
             # 2. HISTOGRAM & EXPOSURE RULES
-            - IF Adaptive Normalization is adjusted: The AI must specify the level of peaks or dips to remove based on the recommended %. 
-             *Example: "Adjust Normalization to 2% and verify histogram peaks below 240 to confirm brightness reduction.."*
+            - IF Adaptive Normalization is adjusted: The AI must specify the level of lowest dips or highest peaks to remove based on the recommended 1–50% extreme‑removal value, expressed in clear, plain language tied directly to the histogram behavior. 
+             *Example (Peaks): "Adjust Adaptive Normalization to remove the highest 2% of histogram peaks to confirm brightness reduction.."*
+             *Example (Dips): "Adjust Adaptive Normalization to remove the lowest 3% of histogram dips and verify shadow noise reduction.."*
             - ALWAYS provide recommended exposure times depending on the X-ray source.
              *Example: "Recommended Exposure: Anterior (0.08s - 0.10s) | Posterior (0.12s - 0.15s)".
 
@@ -197,22 +198,20 @@ if 'current_ai_response' in st.session_state:
     
     col1, col2 = st.columns(2)
     
-    # Use variables to hold the state so the button doesn't lose them on click
     current_res = st.session_state['current_ai_response']
     current_issue = st.session_state.get('last_issue', "General Issue")
 
     with col1:
         if st.button("✅ This worked! Log success", key="log_btn"):
-            # 1. Run the function first
-            try:
-                log_to_google_sheets(software, machine, current_issue, current_res)
-                # 2. If successful, then clear and rerun
-                st.success("Data sent!") 
-                clear_and_reset()
-                st.rerun()
-            except Exception as e:
-                st.error(f"❌ LOGGING FAILED: {e}")
-                st.stop()
+            with st.spinner("Logging to Google Sheets..."):
+                try:
+                    log_to_google_sheets(software, machine, current_issue, current_res)
+                    st.toast("✅ Data logged successfully!") # Toast stays visible for a moment
+                    clear_and_reset()
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"❌ LOGGING FAILED: {e}")
+                    # Removing st.stop() so the user can try again if it was just a glitch
                 
     with col2:
         if st.button("🔄 Clear & Start Over", key="clear_btn"):
