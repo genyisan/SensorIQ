@@ -80,6 +80,8 @@ software_options = sorted([
 ])
 software = st.sidebar.selectbox("Imaging Software", software_options)
 
+st.sidebar.link_button("🚀 Submit Feedback", "YOUR_NOTION_URL_HERE")
+
 # --- 6. BASELINE DISPLAY ---
 match = df_baseline[(df_baseline['software'] == software) & 
                     ((df_baseline['machine'] == machine) | (df_baseline['machine'] == "Unknown"))]
