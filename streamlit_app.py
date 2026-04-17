@@ -84,7 +84,7 @@ software = st.sidebar.selectbox("Imaging Software", software_options)
 st.sidebar.markdown("---") 
 
 # THE FEEDBACK BUTTON
-st.sidebar.link_button("🚀 Submit Feedback", "YOUR_NOTION_PAGE_URL_HERE", use_container_width=True)
+st.sidebar.link_button("🚀 Submit Feedback", "https://www.notion.so/jazzsupport/345f0a2e8ff5807d8f24d9a86bf4e742?v=345f0a2e8ff58080ae22000c286546a3&source=copy_link", use_container_width=True)
 
 # --- 6. BASELINE DISPLAY ---
 match = df_baseline[(df_baseline['software'] == software) & 
