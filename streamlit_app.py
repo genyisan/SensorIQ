@@ -124,9 +124,9 @@ if st.button("Analyze Image Issue"):
             - **IMPORTANT**: Any steps regarding "Zooming out", "Handheld distance", "Exposure times", or "Physical Baselines" MUST be prefixed with the `>` character. 
 
             # 3. HISTOGRAM & EXPOSURE RULES
-            - IF Adaptive Normalization is adjusted: Always provide Low Percentile, High Percentile recomendations along with the level of removal based on the recommended 1–50% removal value of peaks or dips.
-             *Example (Peaks): "Adjust Adaptive Normalization to remove the highest 2% of histogram peaks to confirm brightness reduction.."*
-             *Example (Dips): "Adjust Adaptive Normalization to remove the lowest 3% of histogram dips and verify shadow noise reduction.."*
+            - IF Adaptive Normalization is adjusted: Always provide Low Percentile, High Percentile recomendations along with the level of removal based on the recommended removal value of peaks or dips.
+             *Example (Peaks): "Adjust Adaptive Normalization to Low Percentile 0, High Percentile 2 remove the highest 2% of histogram peaks to confirm brightness reduction.."*
+             *Example (Dips): "Adjust Adaptive Normalization to Low Percentile 3, High Percentile 100 remove the lowest 3% of histogram dips and verify shadow noise reduction.."*
             - ALWAYS provide recommended exposure times depending on the X-ray source.
              *Example: "Recommended Exposure: Anterior (0.08s - 0.10s) | Posterior (0.12s - 0.15s)".
 
