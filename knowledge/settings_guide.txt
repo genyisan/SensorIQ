@@ -1,18 +1,22 @@
 # JAZZ SENSOR GLOBAL CONFIGURATION
+Gradual Adjustments: All software setting changes must be suggested in 5-10% increments.
+Extreme Changes: Do not suggest jumps larger than 20% unless the user describes the image as "unusable," "completely black," or "completely white."
+
 - 2x2 Binning: Combines 4 pixels to 1. Increases sensitivity/brightness; decreases resolution. Use only for weak X-ray sources.
 - Resend Last Image: Reprocesses previous capture with current settings.
 - Processing Chain: Noise Filter > Normalize/CLAHE > Sharpen > Gamma > Out.
 
 # 1. ADAPTIVE NORMALIZATION & S-CURVE LOGIC
 - Enable: Activates global histogram stretching.
-- Low Percentile: Floor for black levels. Range [1.00 - 5.00]; Default: 1.
-- High Percentile: Ceiling for white levels. Range [99 - 100]; Default: 99.
-- Function: Trims outlying/empty data to expand "heavy" data across full histogram. Vital for low-dosage captures.
-- S-Curve: (Enables Data Compression): Controls inclusion of histogram "tails" (outlying data that was removed by the Low Percentile and High Percentile).
-- Scale (Weight) Logic:
-    - LOW SCALE (0.10 - 0.30): "Standard Mode". Steeper curve. Effectively clips empty data. Best for standard caries/bone checks. [cite: 11]
-    - HIGH SCALE (0.70 - 0.90): "Fracture Detection Mode". Flatter curve. Intentionally re-introduces "empty" data tails previously clipped.
-- FRACTURE VISUALIZATION: High scale (0.90) allows visualization of hairline cracks/fractures that are usually "blown out" by standard normalization. Must be paired with Gamma adjustments to see detail.
+- Low Percentile (Shadow Removal): Removes the "Dips" or darkest levels.  
+    - Logic: Setting value N removes N% of the darkest data levels.  
+    - Use: Increase to clear up muddy shadows or "shadow noise."; Default: 1.
+- High Percentile (Highlight Removal): Removes the "Peaks" or brightest levels.  
+    - Logic: Setting value N removes N% of the brightest data levels.  
+    - Use: Increase to reduce "blown-out" or overexposed areas.; Default: 99.
+- S-Curve: Controls the inclusion of the "tails" (the data just removed by the percentiles).  
+    - Low Scale (0.10 - 0.30): "Hard Clip." Keeps data removed. Best for standard bone/caries checks.  
+    - High Scale (0.70 - 0.90): "Soft Clip." Intentionally re-introduces the removed tails. Vital for seeing hairline fractures that are otherwise "clipped".
 
 # 2. IMAGE ROTATION & INTEGRATION BEHAVIOR
 - BEHAVIOR RULE: 
