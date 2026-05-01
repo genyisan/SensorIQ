@@ -7,8 +7,8 @@ from streamlit_gsheets import GSheetsConnection
 
 # --- 1. SETUP MODELS & CLIENT ---
 # Strategic dual-model setup
-SONNET_MODEL = "claude-3-5-sonnet-20241022" # High-level synthesis for Baselines
-HAIKU_MODEL = "claude-3-5-haiku-20241022"   # Rapid response for Troubleshooting
+SONNET_MODEL = "claude-sonnet-4-6" # High-level synthesis for Baselines
+HAIKU_MODEL = "claude-haiku-4-5" # Rapid response for Troubleshooting
 
 try:
     client = anthropic.Anthropic(api_key=st.secrets["CLAUDE_KEY"])
