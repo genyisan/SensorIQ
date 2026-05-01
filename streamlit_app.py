@@ -6,9 +6,9 @@ from datetime import datetime
 from streamlit_gsheets import GSheetsConnection
 
 # --- 1. SETUP MODELS & CLIENT ---
-# Strategic dual-model setup
-SONNET_MODEL = "claude-sonnet-4-6" # High-level synthesis for Baselines
-HAIKU_MODEL = "claude-haiku-4-5" # Rapid response for Troubleshooting
+# Updated to current active model versions (May 2026)
+SONNET_MODEL = "claude-sonnet-4-6"  # High-level synthesis for Baselines
+HAIKU_MODEL = "claude-haiku-4-5"    # Rapid response for Troubleshooting
 
 try:
     client = anthropic.Anthropic(api_key=st.secrets["CLAUDE_KEY"])
@@ -20,14 +20,15 @@ except Exception:
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 def load_technical_manuals():
-    """Reads external TXT files from the /knowledge directory to ground the AI"""
+    """Reads external TXT files from the /knowledge directory"""
+    # Note: Ensure these files exist in a folder named 'knowledge'
     paths = ["knowledge/quick_guide.txt", "knowledge/settings_guide.txt"]
     combined_knowledge = ""
     for path in paths:
         if os.path.exists(path):
             with open(path, "r") as f:
                 combined_knowledge += f"\n--- {path.upper()} ---\n{f.read()}\n"
-    return combined_knowledge if combined_knowledge else "Technical manuals not found."
+    return combined_knowledge if combined_knowledge else "Technical manuals not found in /knowledge folder."
 
 def clear_and_reset():
     """Clears session data for a fresh analysis"""
@@ -58,9 +59,8 @@ def log_to_google_sheets(software, machine, issue, settings, notes):
 
 def get_ai_baseline(software, machine, df, knowledge):
     """Uses SONNET to analyze past successful logs and create a smart baseline"""
-    # Filter for exact matches in the logs
     history = df[(df['software'] == software) & (df['machine'] == machine)]
-    past_data = history.tail(10).to_string(index=False) if not history.empty else "No previous successful logs found for this setup."
+    past_data = history.tail(10).to_string(index=False) if not history.empty else "No previous successful logs found."
     
     baseline_prompt = f"""
     You are a Senior Dental Imaging Specialist. 
@@ -69,7 +69,7 @@ def get_ai_baseline(software, machine, df, knowledge):
     KNOWLEDGE BASE RULES:
     {knowledge}
     
-    PAST SUCCESSFUL LOGS (Use these as evidence):
+    PAST SUCCESSFUL LOGS (Evidence):
     {past_data}
     
     Requirements:
@@ -84,8 +84,9 @@ def get_ai_baseline(software, machine, df, knowledge):
             messages=[{"role": "user", "content": baseline_prompt}]
         )
         return response.content[0].text.strip()
-    except:
-        return "Generic manufacturer defaults."
+    except Exception as e:
+        # Debug helper: shows the actual error if the AI call fails
+        return f"Synthesis Error: {str(e)}"
 
 # --- 3. LOAD DATA & ASSETS ---
 knowledge_context = load_technical_manuals()
@@ -101,7 +102,6 @@ st.markdown(
     """
     <style>
     div[data-testid="stTextArea"] textarea { background-color: #e7e5f5 !important; border: 2px solid #ce93d8 !important; color: #4a148c !important; }
-    div[data-testid="stTextInput"] input { background-color: #e7e5f5 !important; border: 2px solid #ce93d8 !important; color: #4a148c !important; }
     blockquote { border-left: 5px solid #ce93d8 !important; background-color: #f8f9fa !important; padding: 10px 15px !important; color: #4a148c !important; border-radius: 4px; }
     </style>
     """,
@@ -112,8 +112,7 @@ st.title("🦷 Jazz AI Image Quality Assistant")
 
 # --- 5. SIDEBAR: SETUP ---
 st.sidebar.header("Initial Setup")
-machine_options = ["Select...", "Wall-mounted", "Hand-held"]
-machine = st.sidebar.selectbox("X-ray Source", machine_options, index=0)
+machine = st.sidebar.selectbox("X-ray Source", ["Select...", "Wall-mounted", "Hand-held"], index=0)
 
 software_options = ["Select..."] + sorted([
     "CDR DICOM", "Carestream", "Dentrix Ascend", "DEXIS", "Eaglesoft", "Sidexis", "Vixwin", 
@@ -124,133 +123,57 @@ software_options = ["Select..."] + sorted([
     "Overjet", "Aeka", "CLASSIC", "Archy", "OTHER", "Harmony"
 ])
 software = st.sidebar.selectbox("Imaging Software", software_options, index=0)
-
-st.sidebar.markdown("---") 
-st.sidebar.link_button("🚀 Submit Feedback", "https://www.notion.so/jazzsupport/345f0a2e8ff5807d8f24d9a86bf4e742?v=345f0a2e8ff58080ae22000c286546a3", use_container_width=True)
-st.sidebar.caption("v1.0.0 | Jazz AI Support")
+st.sidebar.caption("v1.0.1 | Jazz AI Support")
 
 # --- 6. MAIN LOGIC FLOW ---
 if software == "Select..." or machine == "Select...":
-    st.markdown("""
-        <div style="text-align: center; margin-top: 100px;">
-            <h1 style="font-size: 3.5em; margin-bottom: 0;">👈 Start Here</h1>
-            <p style="font-size: 1.5em; color: #666;">
-                Please select the <b>X-ray Source</b> and <b>Imaging Software</b> <br>on the sidebar to begin.
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
+    st.info("👈 Please select the setup on the sidebar to begin.")
 else:
     # --- STEP 1: SMART BASELINE ---
-    st.divider()
-    
-    # Synthesize baseline only if we haven't already for this selection
-    if 'current_baseline' not in st.session_state:
-        with st.spinner("AI is synthesizing a smart baseline from success history..."):
+    if 'current_baseline' not in st.session_state or st.session_state.get('last_setup') != f"{software}-{machine}":
+        with st.spinner("AI is synthesizing a smart baseline..."):
             st.session_state['current_baseline'] = get_ai_baseline(software, machine, df_baseline, knowledge_context)
+            st.session_state['last_setup'] = f"{software}-{machine}"
 
     st.markdown(f"""
         <div style="background-color: #d4edda; padding: 15px; border-radius: 10px; border-left: 5px solid #28a745;">
-            <h3 style="color: #155724; margin: 0;">📍 STEP 1: Apply Recommended Baseline</h3>
-            <p style="color: #155724; font-size: 1.1em; margin-top: 10px;">
-                <b>AI Synthesis of successful cases:</b><br>{st.session_state['current_baseline']}
-            </p>
-            <p style="color: #155724; font-size: 0.9em;">
-                <i>Try these settings first. If the image needs more work, use Step 2 below.</i>
-            </p>
+            <h3 style="color: #155724; margin: 0;">📍 Recommended Baseline</h3>
+            <p style="color: #155724; font-size: 1.1em; margin-top: 10px;">{st.session_state['current_baseline']}</p>
         </div>
     """, unsafe_allow_html=True)
 
-    st.write("") 
-
     # --- STEP 2: REFINEMENT ---
     st.markdown("---")
-    st.markdown("### 🛠️ STEP 2: Refine Image Quality")
-    st.info("**Instructions:** If the baseline isn't perfect, describe the issue below. The AI will suggest **gradual** adjustments.")
-
-    user_feedback = st.text_area(
-        label="Describe the image issue:", 
-        height=150, 
-        placeholder="e.g., 'The posterior images are still a bit too dark'..."
-    )
+    st.markdown("### 🛠️ Refine Image Quality")
+    user_feedback = st.text_area("Describe the issue:", placeholder="e.g., 'Image is too dark'...")
 
     if st.button("Analyze Image Issue"):
         if user_feedback:
             with st.spinner("Analyzing with Haiku..."):
-                apteryx_software = ["Dentiray", "Harmony", "Imaging XL", "Denticon XV Capture", "Denticon XV Web"]
-                is_apteryx = any(brand.lower() in software.lower() for brand in apteryx_software)
-                
                 prompt = f"""
-                <knowledge_base>
-                {knowledge_context}
-                </knowledge_base>
-
-                <task>
-                Troubleshoot: {software} | {machine}.
+                <knowledge_base>{knowledge_context}</knowledge_base>
+                Task: Troubleshoot {software} | {machine}.
                 Current Baseline: {st.session_state['current_baseline']}
                 User Feedback: {user_feedback}
-                </task>
-
-                <constraints>
-                1. STEADY STATE RULE: Suggest adjustments in steady, gradual increments (5-10% changes). No extreme jumps unless the user says "unusable."
                 
-                2. ADAPTIVE NORMALIZATION (AN) LOGIC:
-                   - AN is a "Data Removal" tool.
-                   - Low Percentile = Removes Dips (Shadows/Dark Data).
-                   - High Percentile = Removes Peaks (Highlights/Bright Data).
-                   - Setting a value of 'N' removes N% of those specific data levels.
-                   - Recommendation MUST state: "Set [Low/High] Percentile to [N] to remove [N]% of data levels."
-
-                3. APTERYX LOGIC:
-                   {"- DEVICE DETECTED: Note that values are REVERSED (higher % = more data cut off)." if is_apteryx else ""}
+                Constraints:
+                1. STEADY STATE: Suggest 5-10% increments only.
+                2. ADAPTIVE NORMALIZATION: Value N = N% of data levels removed.
+                3. FORMAT: **Issue**, then numbered **Actions**.
                 
-                4. FORMAT: **Issue**, followed by a numbered list of **Actions**. NO conversational filler.
-
-                At the very bottom, include:
-                LOG_ISSUE: [Standardized tag: dark, grainy, low contrast, etc.]
-                LOG_SETTINGS: [Feature: Enabled (Param: Value)]
-                </constraints>
+                LOG_ISSUE: [Tag]
+                LOG_SETTINGS: [Settings string]
                 """
-
                 try:
                     response = client.messages.create(
                         model=HAIKU_MODEL,
                         max_tokens=500,
                         messages=[{"role": "user", "content": prompt}]
                     )
-                    full_text = response.content[0].text
-                    
-                    # Parse tags
-                    main_advice = []
-                    log_issue = "general"
-                    log_settings = "none"
-                    for line in full_text.split('\n'):
-                        if "LOG_ISSUE:" in line: log_issue = line.split("LOG_ISSUE:")[1].strip()
-                        elif "LOG_SETTINGS:" in line: log_settings = line.split("LOG_SETTINGS:")[1].strip()
-                        else: main_advice.append(line)
-                    
-                    st.session_state['current_ai_response'] = "\n".join(main_advice).strip()
-                    st.session_state['standardized_issue'] = log_issue
-                    st.session_state['formatted_settings'] = log_settings
+                    st.session_state['current_ai_response'] = response.content[0].text
                 except Exception as e:
-                    st.error(f"Error: {e}")
+                    st.error(f"Analysis Error: {str(e)}")
 
-    # --- 8. RESULTS & LOGGING ---
     if 'current_ai_response' in st.session_state:
-        st.success(f"**Jazz Support AI Advice:** \n\n {st.session_state['current_ai_response']}")
+        st.success(st.session_state['current_ai_response'])
         
-        st.divider()
-        st.write("### 📝 Finalize Log Entry")
-        tech_notes = st.text_input("Add tech notes (e.g., 'Client happy'):", placeholder="none")
-
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("✅ Log Success", key="log_btn"):
-                with st.spinner("Logging..."):
-                    if log_to_google_sheets(software, machine, st.session_state['standardized_issue'], st.session_state['formatted_settings'], tech_notes):
-                        st.toast("✅ Success Logged!")
-                        clear_and_reset()
-                        st.rerun()
-        with col2:
-            if st.button("🔄 Clear & Start Over", key="clear_btn"):
-                clear_and_reset()
-                st.rerun()
